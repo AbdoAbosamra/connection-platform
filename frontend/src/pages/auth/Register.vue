@@ -120,8 +120,8 @@ const fieldErrors  = ref(null)   // 422 validation errors (object of field → [
 const generalError = ref('')     // network / server / any other error
 
 const roles = [
-  { value: 'job_seeker', label: '🌍 Looking for work' },
-  { value: 'employer',   label: '🏢 I\'m hiring' },
+  { value: 'job_seeker', label: '🌍 Job Seeker' },
+  { value: 'employer',   label: '🏢 Hiring company' },
 ]
 
 const form = ref({
