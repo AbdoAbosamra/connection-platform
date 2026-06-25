@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Rules\BusinessEmail;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class RegisterRequest extends FormRequest
 {
@@ -15,7 +17,11 @@ class RegisterRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'unique:users,email', 'max:255'],
+            'email' => [
+                'required', 'email', 'unique:users,email', 'max:255',
+                // Companies must register with a business email, not a free/personal one.
+                Rule::when($this->input('role') === 'employer', [new BusinessEmail]),
+            ],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'role' => ['required', 'in:employer,job_seeker'],
             'country' => ['nullable', 'string', 'max:100'],

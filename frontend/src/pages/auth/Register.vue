@@ -35,8 +35,20 @@
       </div>
 
       <div>
-        <label class="label">Email address</label>
-        <input v-model="form.email" type="email" class="input" placeholder="you@example.com" required />
+        <label class="label">{{ form.role === 'employer' ? 'Company email address' : 'Email address' }}</label>
+        <input
+          v-model="form.email"
+          type="email"
+          :class="['input', emailDomainError ? '!border-rose-400 !ring-rose-500/20' : '']"
+          :placeholder="form.role === 'employer' ? 'you@yourcompany.com' : 'you@example.com'"
+          required
+        />
+        <p v-if="form.role === 'employer' && !emailDomainError" class="mt-1 text-xs text-gray-500">
+          Companies must register with a business email — not Gmail, Yahoo, Outlook, etc.
+        </p>
+        <p v-if="emailDomainError" class="mt-1 text-xs text-rose-500 font-medium">
+          {{ emailDomainError }}
+        </p>
       </div>
 
       <div>
@@ -90,7 +102,7 @@
         </p>
       </div>
 
-      <button type="submit" class="btn-primary w-full !py-3.5 text-base" :disabled="loading || !agreedToTerms">
+      <button type="submit" class="btn-primary w-full !py-3.5 text-base" :disabled="loading || !agreedToTerms || !!emailDomainError">
         <svg v-if="loading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -109,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
@@ -124,15 +136,49 @@ const roles = [
   { value: 'employer',   label: '🏢 Hiring company' },
 ]
 
+// Free / personal / disposable providers blocked for company accounts. This
+// mirrors the backend EmailDomainClassifier for instant feedback; the backend
+// remains the source of truth (BusinessEmail rule + AuthService guard).
+const FREE_EMAIL_DOMAINS = new Set([
+  'gmail.com', 'googlemail.com', 'yahoo.com', 'yahoo.co.uk', 'yahoo.co.in', 'ymail.com',
+  'rocketmail.com', 'hotmail.com', 'hotmail.co.uk', 'outlook.com', 'live.com', 'msn.com',
+  'aol.com', 'icloud.com', 'me.com', 'mac.com', 'protonmail.com', 'proton.me', 'pm.me',
+  'gmx.com', 'gmx.de', 'mail.com', 'yandex.com', 'yandex.ru', 'zoho.com', 'zohomail.com',
+  'fastmail.com', 'hey.com', 'tutanota.com', 'qq.com', '163.com', '126.com', 'naver.com',
+  'web.de', 'comcast.net', 'verizon.net', 'att.net', 'sbcglobal.net', 'cox.net', 'btinternet.com',
+  'mailinator.com', 'guerrillamail.com', '10minutemail.com', 'temp-mail.org', 'tempmail.com',
+  'yopmail.com', 'trashmail.com', 'sharklasers.com', 'maildrop.cc', 'getnada.com',
+])
+
 const form = ref({
   name: '', email: '', password: '', password_confirmation: '',
   role: 'job_seeker', company_name: '', country: '',
+})
+
+// Only companies are required to use a business email. Empty/incomplete input is
+// left to the native `required`/email validation rather than flagged here.
+const emailDomainError = computed(() => {
+  if (form.value.role !== 'employer') return ''
+  const email = form.value.email.trim().toLowerCase()
+  const at = email.lastIndexOf('@')
+  if (at < 1 || at === email.length - 1) return ''
+  const domain = email.slice(at + 1)
+  if (FREE_EMAIL_DOMAINS.has(domain)) {
+    return 'Please use your company email address — free or personal providers (Gmail, Yahoo, Outlook, etc.) are not accepted for company accounts.'
+  }
+  return ''
 })
 
 async function submit() {
   loading.value     = true
   fieldErrors.value = null
   generalError.value = ''
+
+  // Client-side business-email guard (the backend enforces this too).
+  if (emailDomainError.value) {
+    loading.value = false
+    return
+  }
 
   try {
     const payload = { ...form.value }

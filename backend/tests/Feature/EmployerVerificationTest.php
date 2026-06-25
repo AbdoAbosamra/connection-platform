@@ -50,14 +50,14 @@ class EmployerVerificationTest extends TestCase
         ]);
     }
 
-    public function test_personal_email_employer_is_not_auto_verified(): void
+    public function test_personal_email_employer_is_rejected_at_registration(): void
     {
-        $res = $this->registerEmployer('jane.doe@gmail.com')->assertCreated();
+        // Company accounts must use a business email — free providers are blocked.
+        $this->registerEmployer('jane.doe@gmail.com')
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('email');
 
-        $this->assertDatabaseHas('employer_profiles', [
-            'user_id' => $res->json('user.id'),
-            'is_verified' => false,
-        ]);
+        $this->assertDatabaseMissing('users', ['email' => 'jane.doe@gmail.com']);
     }
 
     public function test_disposable_email_employer_is_rejected_at_registration(): void
@@ -65,6 +65,20 @@ class EmployerVerificationTest extends TestCase
         $this->registerEmployer('throwaway@mailinator.com')
             ->assertStatus(422)
             ->assertJsonValidationErrors('email');
+    }
+
+    public function test_job_seeker_may_register_with_a_personal_email(): void
+    {
+        // The business-email rule applies to companies only, never to job seekers.
+        $this->postJson('/api/auth/register', [
+            'name' => 'Jane Doe',
+            'email' => 'jane.doe@gmail.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'role' => 'job_seeker',
+        ])->assertCreated();
+
+        $this->assertDatabaseHas('users', ['email' => 'jane.doe@gmail.com', 'role' => 'job_seeker']);
     }
 
     public function test_unverified_employer_cannot_post_jobs(): void

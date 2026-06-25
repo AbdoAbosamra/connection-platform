@@ -16,11 +16,14 @@ class AuthService
 
     public function register(array $data): array
     {
-        // Disposable / throwaway employer emails are rejected outright — they can
-        // never represent a real business, so they shouldn't even hold an account.
-        if (($data['role'] ?? null) === 'employer' && $this->verification->isDisposable($data['email'])) {
+        // Companies must register with a real business email. Free/personal
+        // providers (Gmail, Yahoo, …) and disposable/throwaway addresses are
+        // rejected outright — they can never represent a verified company.
+        // (The FormRequest enforces this first; this is defence in depth in case
+        // registration is ever invoked outside the HTTP validation layer.)
+        if (($data['role'] ?? null) === 'employer' && !$this->verification->isBusinessEmail($data['email'])) {
             throw ValidationException::withMessages([
-                'email' => ['Please register with a permanent company email address.'],
+                'email' => ['Please use your company email address. Free or personal providers (Gmail, Yahoo, Outlook, etc.) are not accepted for company accounts.'],
             ]);
         }
 

@@ -37,6 +37,17 @@ class VerificationService
         return $this->classifier->isDisposable($email);
     }
 
+    /**
+     * A business email is one that is neither a free/personal provider nor a
+     * disposable one. Used to gate company (employer) registration. Kept free of
+     * the DNS/MX lookup so the registration path is fast and offline-testable.
+     */
+    public function isBusinessEmail(string $email): bool
+    {
+        return !$this->classifier->isFreeProvider($email)
+            && !$this->classifier->isDisposable($email);
+    }
+
     // ── LinkedIn OAuth ──────────────────────────────────────────────────────
 
     public function linkedInEnabled(): bool
