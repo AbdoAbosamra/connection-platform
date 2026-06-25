@@ -5,9 +5,8 @@ namespace App\Console\Commands;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 /**
  * Create a new platform administrator, or promote an existing user to admin.
@@ -36,23 +35,23 @@ class CreateAdmin extends Command
 
     public function handle(): int
     {
-        $name  = $this->option('name')  ?: $this->ask('Full name', 'Site Owner');
+        $name = $this->option('name') ?: $this->ask('Full name', 'Site Owner');
         $email = $this->option('email') ?: $this->ask('Email address');
 
         // Generate a strong password if none was supplied, so non-interactive
         // runs still produce a secure account rather than a weak default.
         $generated = false;
-        $password  = $this->option('password');
+        $password = $this->option('password');
         if (!$password) {
-            $password  = Str::password(16);
+            $password = Str::password(16);
             $generated = true;
         }
 
         $validator = Validator::make(
             ['name' => $name, 'email' => $email, 'password' => $password],
             [
-                'name'     => ['required', 'string', 'max:100'],
-                'email'    => ['required', 'email', 'max:255'],
+                'name' => ['required', 'string', 'max:100'],
+                'email' => ['required', 'email', 'max:255'],
                 'password' => ['required', 'string', 'min:8'],
             ]
         );
@@ -83,9 +82,9 @@ class CreateAdmin extends Command
             }
 
             $existing->update([
-                'role'      => 'admin',
+                'role' => 'admin',
                 'is_active' => true,
-                'password'  => Hash::make($password),
+                'password' => Hash::make($password),
             ]);
 
             $this->info("✓ User #{$existing->id} <{$email}> promoted to admin.");
@@ -105,11 +104,11 @@ class CreateAdmin extends Command
         }
 
         $admin = User::create([
-            'name'              => $name,
-            'email'             => $email,
-            'password'          => Hash::make($password),
-            'role'              => 'admin',
-            'is_active'         => true,
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make($password),
+            'role' => 'admin',
+            'is_active' => true,
             'email_verified_at' => now(),
         ]);
 
