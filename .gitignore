@@ -16,7 +16,10 @@ vendor/
 /backend/storage/framework/cache/*
 /backend/storage/framework/sessions/*
 /backend/storage/framework/views/*
+/backend/storage/framework/testing/
 /backend/storage/logs/*
+/backend/storage/app/public/*
+!/backend/storage/app/public/.gitignore
 /backend/bootstrap/cache/*.php
 /backend/public/storage
 /backend/.phpunit.result.cache
