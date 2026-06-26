@@ -1,14 +1,16 @@
 name: Deploy to VPS
 
-# Runs after code lands on main, or manually from the Actions tab.
-# It is SAFE to merge before configuring the server: if the SSH secrets
-# are missing the job logs a warning and exits green (it deploys nothing).
+# Deploys ONLY after the CI workflow succeeds on main (tests + lint must pass
+# first), or manually from the Actions tab. It is SAFE before the server is set
+# up: if the SSH secrets are missing the job logs a warning and exits green.
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
-# Never let two deploys run at once — a newer push cancels an in-flight deploy.
+# Never let two deploys run at once — a newer run cancels an in-flight deploy.
 concurrency:
   group: deploy-production
   cancel-in-progress: true
@@ -17,6 +19,8 @@ jobs:
   deploy:
     name: Build & ship to server
     runs-on: ubuntu-latest
+    # Gate: proceed only when CI passed (workflow_run) or on a manual dispatch.
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       # 1) Decide whether we can deploy. If the required secrets are not set,
       #    every later step is skipped and the job still passes (no red X).
