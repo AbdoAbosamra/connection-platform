@@ -7,7 +7,9 @@ vendor/
 # ── Environment & secrets (NEVER commit) ────────────────────────
 .env
 .env.*
+# …but DO keep the non-secret example templates in the repo.
 !.env.example
+!.env.*.example
 *.pem
 *.key
 
