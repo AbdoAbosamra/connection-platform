@@ -35,6 +35,7 @@ Route::middleware('throttle:10,1')->group(function () {
 Route::middleware('throttle:90,1')->group(function () {
     // Job listings
     Route::get('/jobs', [JobController::class, 'index']);
+    Route::get('/job-categories', [JobController::class, 'categories']);
     Route::get('/jobs/{slug}', [JobController::class, 'show']);
 
     // Pricing

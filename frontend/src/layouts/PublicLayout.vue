@@ -27,6 +27,20 @@
           >
             {{ lang.t('nav.findProfessionals') }}
           </RouterLink>
+          <RouterLink
+            to="/about"
+            class="hover:text-amber-400 transition-colors py-1 border-b-2 border-transparent hover:border-amber-400/50"
+            :class="{ 'text-amber-400 !border-amber-400/70': $route.path === '/about' }"
+          >
+            {{ lang.t('nav.about') }}
+          </RouterLink>
+          <RouterLink
+            to="/faq"
+            class="hover:text-amber-400 transition-colors py-1 border-b-2 border-transparent hover:border-amber-400/50"
+            :class="{ 'text-amber-400 !border-amber-400/70': $route.path === '/faq' }"
+          >
+            {{ lang.t('nav.faq') }}
+          </RouterLink>
         </nav>
 
         <!-- Right side -->
@@ -69,6 +83,8 @@
           <div class="flex flex-wrap items-center justify-center gap-6 text-xs">
             <RouterLink to="/jobs" class="hover:text-white transition-colors">{{ lang.t('nav.opportunities') }}</RouterLink>
             <RouterLink to="/professionals" class="hover:text-white transition-colors">{{ lang.t('nav.findProfessionals') }}</RouterLink>
+            <RouterLink to="/about" class="hover:text-white transition-colors">{{ lang.t('footer.about') }}</RouterLink>
+            <RouterLink to="/faq" class="hover:text-white transition-colors">{{ lang.t('footer.faq') }}</RouterLink>
             <RouterLink to="/register" class="hover:text-white transition-colors">{{ lang.t('footer.signUp') }}</RouterLink>
             <span class="w-px h-3 bg-gray-700 hidden sm:block" />
             <RouterLink to="/privacy" class="hover:text-white transition-colors text-gray-500">Privacy Policy</RouterLink>

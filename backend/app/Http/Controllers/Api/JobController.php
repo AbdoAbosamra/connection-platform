@@ -40,4 +40,15 @@ class JobController extends Controller
 
         return response()->json(['job' => $job]);
     }
+
+    /**
+     * Real active-job counts per category, e.g. {"Engineering": 3, "Design": 1}.
+     * Used by the homepage so the category tiles never show inflated numbers.
+     */
+    public function categories(): JsonResponse
+    {
+        return response()->json([
+            'counts' => $this->jobs->facets([])['category'],
+        ]);
+    }
 }

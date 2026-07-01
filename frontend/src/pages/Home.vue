@@ -168,7 +168,7 @@
           <div class="relative">
             <div class="text-3xl mb-3">{{ cat.emoji }}</div>
             <p class="font-bold text-gray-900 group-hover:text-primary-700 transition-colors mb-0.5">{{ cat.name }}</p>
-            <p class="text-xs text-gray-400 font-medium">{{ cat.count.toLocaleString() }}+ {{ lang.t('categories.jobs') }}</p>
+            <p class="text-xs text-gray-400 font-medium">{{ categoryLabel(cat.name) }}</p>
           </div>
           <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
             <svg class="w-4 h-4 text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -231,25 +231,46 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { GlobeAltIcon, ShieldCheckIcon, BoltIcon } from '@heroicons/vue/24/outline'
 import { useLanguageStore } from '@/stores/language'
+import client from '@/api/client'
 
 const router = useRouter()
 const lang   = useLanguageStore()
 const query  = ref('')
 
 const categories = [
-  { name: 'Engineering',      emoji: '💻', count: 820 },
-  { name: 'Design',           emoji: '🎨', count: 210 },
-  { name: 'Marketing',        emoji: '📣', count: 180 },
-  { name: 'Data Science',     emoji: '📊', count: 150 },
-  { name: 'Finance',          emoji: '💰', count: 95  },
-  { name: 'Product',          emoji: '🗂️', count: 130 },
-  { name: 'Operations',       emoji: '⚙️', count: 75  },
-  { name: 'Customer Success', emoji: '🤝', count: 90  },
+  { name: 'Engineering',      emoji: '💻' },
+  { name: 'Design',           emoji: '🎨' },
+  { name: 'Marketing',        emoji: '📣' },
+  { name: 'Data Science',     emoji: '📊' },
+  { name: 'Finance',          emoji: '💰' },
+  { name: 'Product',          emoji: '🗂️' },
+  { name: 'Operations',       emoji: '⚙️' },
+  { name: 'Customer Success', emoji: '🤝' },
 ]
+
+// Real active-job counts per category (loaded from the API). We never show
+// inflated numbers: a category with real openings shows the true count, and
+// everything else shows an honest "New listings added daily".
+const catCounts = ref({})
+
+function categoryLabel(name) {
+  const n = catCounts.value[name] ?? 0
+  if (n > 0) return `${n} ${n === 1 ? lang.t('categories.openRole') : lang.t('categories.openRoles')}`
+  return lang.t('categories.addedDaily')
+}
+
+onMounted(async () => {
+  try {
+    const { data } = await client.get('/job-categories')
+    catCounts.value = data.counts ?? {}
+  } catch {
+    catCounts.value = {}
+  }
+})
 
 const features = [
   {

@@ -18,6 +18,9 @@ const router = createRouter({
         { path: 'professionals/:id',  name: 'professional.detail',  component: () => import('@/pages/professionals/ProfessionalDetail.vue') },
         // Public pricing page
         { path: 'pricing', name: 'pricing', component: () => import('@/pages/Pricing.vue') },
+        // About + FAQ — trust infrastructure for visitors evaluating the platform
+        { path: 'about', name: 'about', component: () => import('@/pages/About.vue') },
+        { path: 'faq',   name: 'faq',   component: () => import('@/pages/FAQ.vue') },
         // Legal pages — public, no auth required, inherit PublicLayout navbar + footer
         { path: 'privacy', name: 'privacy', component: () => import('@/pages/PrivacyPolicy.vue') },
         { path: 'terms',   name: 'terms',   component: () => import('@/pages/TermsAndConditions.vue') },
