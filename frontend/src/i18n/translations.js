@@ -43,7 +43,7 @@ export const translations = {
     },
     features: {
       globalReach: 'Global Reach',
-      globalReachDesc: 'Connect with talent from 50+ countries and companies across North America and beyond.',
+      globalReachDesc: 'Connect with international talent and companies across North America and beyond.',
       verifiedProfiles: 'Verified Profiles',
       verifiedProfilesDesc: 'Every profile is reviewed to ensure quality and authenticity for both sides.',
       applyInSeconds: 'Apply in Seconds',
@@ -52,7 +52,7 @@ export const translations = {
     employers: {
       label: 'For Employers',
       title: 'Hire globally, grow faster',
-      desc: 'Access a pre-vetted pool of skilled professionals from 50+ countries. Post a job in minutes and start receiving qualified applications today.',
+      desc: 'Access a pre-vetted pool of skilled international professionals. Post a job in minutes and start receiving qualified applications today.',
       cta: 'Post a Job Free',
       note: 'No credit card required · Free to post',
     },
