@@ -73,8 +73,8 @@ sudo chown -R SITE_USER:SITE_USER storage bootstrap/cache
 chmod -R ug+rwX storage bootstrap/cache
 ```
 
-> After seeding, **delete or re-secure the demo admin** `admin@connextion.io`
-> (weak password): `php artisan tinker --execute="App\Models\User::where('email','admin@connextion.io')->forceDelete();"`
+> After seeding, **delete or re-secure the demo admin** `admin@remotearena.io`
+> (weak password): `php artisan tinker --execute="App\Models\User::where('email','admin@remotearena.io')->forceDelete();"`
 
 ---
 
@@ -140,7 +140,7 @@ sudo ufw enable
 Checklist:
 - [ ] `APP_DEBUG=false` and `APP_ENV=production` in `.env`
 - [ ] `TELESCOPE_ENABLED=false`
-- [ ] Demo admin `admin@connextion.io` removed / password changed
+- [ ] Demo admin `admin@remotearena.io` removed / password changed
 - [ ] Strong unique `DB_PASSWORD` (not the dev password)
 - [ ] HTTPS forced (CloudPanel "Force HTTPS")
 - [ ] A queue worker running if you use queued mail: `php artisan queue:work`

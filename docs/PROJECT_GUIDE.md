@@ -439,7 +439,7 @@ php artisan migrate --seed
 php artisan storage:link
 php artisan serve            # http://localhost:8000
 ```
-بيانات تجريبية بعد الـ seed: أدمن (`admin@connextion.io` / `password`)، مُوظِّف (`employer@demo.com`)، ومهارات وخطط أساسية.
+بيانات تجريبية بعد الـ seed: أدمن (`admin@remotearena.io` / `password`)، مُوظِّف (`employer@demo.com`)، ومهارات وخطط أساسية.
 
 ### Frontend
 ```bash

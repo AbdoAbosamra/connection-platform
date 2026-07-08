@@ -127,7 +127,7 @@
           <li>File uploads are validated for type, size, and content before storage.</li>
           <li>Access to production data is restricted to authorised personnel only.</li>
         </ul>
-        <p class="body-text mt-4">No system is 100% secure. If you believe your account has been compromised, please contact us immediately at <span class="text-primary-400">security@remotearena.io</span>.</p>
+        <p class="body-text mt-4">No system is 100% secure. If you believe your account has been compromised, please contact us immediately at <span class="text-primary-400">support@remotearena.io</span>.</p>
       </section>
 
       <!-- 6 -->
@@ -140,7 +140,7 @@
             <p class="text-gray-400 text-xs leading-relaxed">{{ right.desc }}</p>
           </div>
         </div>
-        <p class="body-text mt-6">To exercise any of these rights, email <span class="text-primary-400">privacy@remotearena.io</span>. We will respond within 30 days. We may need to verify your identity before processing your request.</p>
+        <p class="body-text mt-6">To exercise any of these rights, email <span class="text-primary-400">support@remotearena.io</span>. We will respond within 30 days. We may need to verify your identity before processing your request.</p>
       </section>
 
       <!-- 7 -->
@@ -163,7 +163,7 @@
       <!-- 9 -->
       <section>
         <h2 class="section-heading">9. Children's Privacy</h2>
-        <p class="body-text">The Platform is not directed to individuals under 16 years of age. We do not knowingly collect personal data from children. If you believe a child has provided us with personal data, contact us at <span class="text-primary-400">privacy@remotearena.io</span> and we will delete it.</p>
+        <p class="body-text">The Platform is not directed to individuals under 16 years of age. We do not knowingly collect personal data from children. If you believe a child has provided us with personal data, contact us at <span class="text-primary-400">support@remotearena.io</span> and we will delete it.</p>
       </section>
 
       <!-- 10 -->
@@ -177,9 +177,7 @@
         <h2 class="section-heading">11. Contact Us</h2>
         <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 text-sm space-y-2">
           <p class="text-white font-semibold">RemoteArena Inc. — Data Controller</p>
-          <p class="text-gray-400">📧 Privacy inquiries: <span class="text-primary-400">privacy@remotearena.io</span></p>
-          <p class="text-gray-400">🔒 Security reports: <span class="text-primary-400">security@remotearena.io</span></p>
-          <p class="text-gray-400">📮 General support: <span class="text-primary-400">support@remotearena.io</span></p>
+          <p class="text-gray-400">📮 Contact us: <span class="text-primary-400">support@remotearena.io</span></p>
         </div>
       </section>
 

@@ -412,10 +412,7 @@
         <div class="bg-gray-900 border border-gray-800 rounded-2xl p-6 text-sm space-y-3">
           <p class="text-white font-bold text-base">RemoteArena Inc.</p>
           <div class="space-y-1.5 text-gray-400">
-            <p>📧 Legal &amp; compliance: <span class="text-primary-400">legal@remotearena.io</span></p>
-            <p>🔒 Security reports: <span class="text-primary-400">security@remotearena.io</span></p>
-            <p>🛡️ Privacy inquiries: <span class="text-primary-400">privacy@remotearena.io</span></p>
-            <p>💬 General support: <span class="text-primary-400">support@remotearena.io</span></p>
+            <p>💬 Contact us: <span class="text-primary-400">support@remotearena.io</span></p>
             <p>🌐 Website: <span class="text-primary-400">remotearena.io</span></p>
           </div>
         </div>

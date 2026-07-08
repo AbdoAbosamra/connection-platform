@@ -108,7 +108,7 @@ until it passes. Server: Hostinger VPS · `2.25.66.54` · Ubuntu 24.04 · CloudP
 - [ ] `APP_DEBUG=false` and `TELESCOPE_ENABLED=false` in `.env` (re-check).
 - [ ] Remove the weak demo admin:
       ```bash
-      php artisan tinker --execute="App\Models\User::where('email','admin@connextion.io')->forceDelete();"
+      php artisan tinker --execute="App\Models\User::where('email','admin@remotearena.io')->forceDelete();"
       ```
 - [ ] Confirm `DB_PASSWORD` is strong and unique (not the dev `07775000`).
       **Verify:** `curl -s https://remotearena.io/api/nonexistent` returns JSON
