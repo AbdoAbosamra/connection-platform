@@ -23,8 +23,9 @@
 
       <h1 class="text-5xl md:text-7xl font-extrabold text-white leading-[1.08] mb-6 tracking-tight">
         {{ lang.t('hero.title1') }}<br />
+        {{ lang.t('hero.title2') }}<br />
         <span class="bg-gradient-to-r from-primary-300 via-purple-300 to-pink-300 bg-clip-text text-transparent">
-          {{ lang.t('hero.title2') }}
+          {{ lang.t('hero.title3') }}
         </span>
       </h1>
       <p class="text-xl text-white/60 mb-12 max-w-2xl mx-auto leading-relaxed">
@@ -32,21 +33,30 @@
       </p>
 
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <!-- Primary: Post a Job -->
         <RouterLink
-          to="/jobs"
+          to="/register?role=employer"
           class="inline-flex items-center justify-center gap-2 bg-white text-primary-700 font-bold px-9 py-4 rounded-2xl hover:bg-primary-50 transition-all duration-200 shadow-2xl shadow-black/30 text-base active:scale-95"
         >
-          {{ lang.t('hero.browseJobs') }}
+          {{ lang.t('hero.postJob') }}
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
           </svg>
         </RouterLink>
+        <!-- Secondary: Find Talent -->
         <RouterLink
-          to="/register?role=job_seeker"
+          to="/professionals"
           class="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white font-semibold px-9 py-4 rounded-2xl hover:bg-white/10 backdrop-blur-sm transition-all duration-200 text-base active:scale-95"
         >
-          {{ lang.t('hero.createProfile') }}
+          {{ lang.t('hero.findTalent') }}
         </RouterLink>
+        <!-- Third: Book a Demo -->
+        <a
+          href="mailto:support@remotearena.io?subject=Book%20a%20Demo%20—%20RemoteArena"
+          class="inline-flex items-center justify-center gap-2 text-white/80 font-semibold px-9 py-4 rounded-2xl hover:text-white hover:bg-white/5 transition-all duration-200 text-base active:scale-95"
+        >
+          {{ lang.t('hero.bookDemo') }}
+        </a>
       </div>
 
       <!-- Trust badges -->
@@ -90,8 +100,8 @@
   <section class="max-w-7xl mx-auto px-4 py-20">
     <div class="text-center mb-12">
       <span class="inline-block text-xs font-bold uppercase tracking-widest text-primary-500 mb-3">Simple &amp; Fast</span>
-      <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">How RemoteArena works</h2>
-      <p class="text-gray-500 text-lg max-w-lg mx-auto">Three steps to your next remote opportunity — or your next great hire.</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">How it works</h2>
+      <p class="text-gray-500 text-lg max-w-lg mx-auto">Three steps from open role to hired — locally or globally.</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
@@ -106,8 +116,8 @@
           </svg>
         </div>
         <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-primary-600 text-white text-xs font-bold flex items-center justify-center shadow-md">1</div>
-        <h3 class="font-bold text-gray-900 text-lg mb-2">Build your profile</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">Create a standout profile showcasing your skills, experience, and the kind of remote work you're looking for.</p>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">Post a Job</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Create your job in minutes. Set the role, salary, and whether you're hiring locally, remotely, or internationally.</p>
       </div>
 
       <!-- Step 2 -->
@@ -118,8 +128,8 @@
           </svg>
         </div>
         <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-violet-600 text-white text-xs font-bold flex items-center justify-center shadow-md">2</div>
-        <h3 class="font-bold text-gray-900 text-lg mb-2">Discover opportunities</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">Browse hundreds of remote positions across engineering, design, marketing, and more — filtered to match your goals.</p>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">Match &amp; Rank Candidates</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Applicants are ranked by skills, experience, education, certifications, availability, and salary expectations — so the strongest fits rise to the top.</p>
       </div>
 
       <!-- Step 3 -->
@@ -130,21 +140,21 @@
           </svg>
         </div>
         <div class="absolute -top-3 -right-3 w-7 h-7 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center shadow-md">3</div>
-        <h3 class="font-bold text-gray-900 text-lg mb-2">Apply &amp; get hired</h3>
-        <p class="text-sm text-gray-500 leading-relaxed">Apply in seconds with your saved profile. Employers reach out directly — no middlemen, no delays.</p>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">Hire</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">Message candidates, schedule interviews, and hire directly — choosing the hiring mode that best fits the role.</p>
       </div>
     </div>
 
     <!-- Bottom CTA row -->
     <div class="mt-10 flex flex-wrap gap-4 justify-center">
-      <RouterLink to="/jobs" class="inline-flex items-center gap-2 bg-primary-600 text-white font-semibold px-7 py-3 rounded-xl hover:bg-primary-700 transition-colors text-sm shadow-sm shadow-primary-200">
-        Browse remote jobs
+      <RouterLink to="/register?role=employer" class="inline-flex items-center gap-2 bg-primary-600 text-white font-semibold px-7 py-3 rounded-xl hover:bg-primary-700 transition-colors text-sm shadow-sm shadow-primary-200">
+        Post a Job
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
         </svg>
       </RouterLink>
       <RouterLink to="/professionals" class="inline-flex items-center gap-2 border border-gray-200 text-gray-700 font-semibold px-7 py-3 rounded-xl hover:bg-gray-50 transition-colors text-sm">
-        Find professionals
+        Find Talent
       </RouterLink>
     </div>
   </section>
