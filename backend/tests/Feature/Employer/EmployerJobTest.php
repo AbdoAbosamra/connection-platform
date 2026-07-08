@@ -42,9 +42,60 @@ class EmployerJobTest extends TestCase
         $this->postJson('/api/employer/jobs', $this->validJobPayload())
             ->assertCreated()
             ->assertJsonPath('job.title', 'Senior Laravel Engineer')
-            ->assertJsonPath('job.location_type', 'remote');
+            // Jobs default to local hiring unless another mode is chosen.
+            ->assertJsonPath('job.hiring_mode', 'local')
+            ->assertJsonPath('job.location_type', 'on_site');
 
         $this->assertEquals(2, $user->employerProfile->fresh()->job_post_credits);
+    }
+
+    public function test_employer_can_post_an_international_remote_job(): void
+    {
+        $user = $this->employer(['subscription_tier' => 'free', 'job_post_credits' => 3]);
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/employer/jobs', $this->validJobPayload([
+            'hiring_mode' => 'international_remote',
+            'accepted_countries' => ['Egypt', 'Morocco', 'Kenya'],
+            'time_zones' => ['UTC+1', 'UTC+2'],
+            'languages' => ['English'],
+            'contract_type' => 'contractor',
+            'working_hours' => '4h overlap with EST',
+            'currency_preference' => 'USD',
+        ]))
+            ->assertCreated()
+            ->assertJsonPath('job.hiring_mode', 'international_remote')
+            ->assertJsonPath('job.location_type', 'remote')
+            ->assertJsonPath('job.accepted_countries.0', 'Egypt')
+            ->assertJsonPath('job.contract_type', 'contractor');
+    }
+
+    public function test_international_remote_requires_accepted_countries(): void
+    {
+        Sanctum::actingAs($this->employer());
+
+        $this->postJson('/api/employer/jobs', $this->validJobPayload([
+            'hiring_mode' => 'international_remote',
+        ]))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('accepted_countries');
+    }
+
+    public function test_international_fields_are_cleared_for_local_jobs(): void
+    {
+        $user = $this->employer(['subscription_tier' => 'free', 'job_post_credits' => 3]);
+        Sanctum::actingAs($user);
+
+        // Client sends international fields but picks local — they must be discarded.
+        $this->postJson('/api/employer/jobs', $this->validJobPayload([
+            'hiring_mode' => 'local',
+            'accepted_countries' => ['Egypt'],
+            'contract_type' => 'contractor',
+        ]))
+            ->assertCreated()
+            ->assertJsonPath('job.hiring_mode', 'local')
+            ->assertJsonPath('job.accepted_countries', null)
+            ->assertJsonPath('job.contract_type', null);
     }
 
     public function test_employer_without_credits_cannot_post(): void

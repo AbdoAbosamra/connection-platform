@@ -143,6 +143,42 @@ class JobService
         }
     }
 
+    /**
+     * Derive the stored location flags from the chosen hiring mode, and strip
+     * the international-only fields whenever the job is not international remote.
+     * This keeps the data honest no matter what the client submits.
+     *
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    private function normalizeHiringMode(array $data, string $fallback = 'local'): array
+    {
+        $mode = $data['hiring_mode'] ?? $fallback;
+        if (!in_array($mode, ['local', 'national_remote', 'international_remote'], true)) {
+            $mode = 'local';
+        }
+        $data['hiring_mode'] = $mode;
+
+        // Keep the legacy location_type column consistent so existing listings
+        // and search keep working (hiring_mode is the source of truth).
+        $data['location_type'] = $mode === 'local' ? 'on_site' : 'remote';
+
+        // International-only fields are meaningless for local / national jobs.
+        if ($mode !== 'international_remote') {
+            foreach ([
+                'accepted_countries', 'time_zones', 'languages', 'contract_type',
+                'working_hours', 'currency_preference', 'payroll_preference',
+                'collaboration_preferences',
+            ] as $field) {
+                if (array_key_exists($field, $data)) {
+                    $data[$field] = null;
+                }
+            }
+        }
+
+        return $data;
+    }
+
     public function createJob(EmployerProfile $employer, array $data): Job
     {
         return DB::transaction(function () use ($employer, $data) {
@@ -155,8 +191,7 @@ class JobService
                 ]);
             }
 
-            // Platform is remote-only — enforce this regardless of what the frontend sends.
-            $data['location_type'] = 'remote';
+            $data = $this->normalizeHiringMode($data);
 
             $job = $lockedEmployer->jobs()->create($data);
 
@@ -176,7 +211,7 @@ class JobService
     public function updateJob(Job $job, array $data): Job
     {
         return DB::transaction(function () use ($job, $data) {
-            $data['location_type'] = 'remote'; // platform invariant
+            $data = $this->normalizeHiringMode($data, $job->hiring_mode ?? 'local');
             $job->update($data);
 
             if (array_key_exists('skills', $data)) {

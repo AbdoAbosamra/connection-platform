@@ -13,8 +13,10 @@ class Job extends Model
 
     protected $fillable = [
         'employer_profile_id', 'title', 'slug', 'description', 'requirements',
-        'benefits', 'category', 'employment_type', 'location_type',
+        'benefits', 'category', 'employment_type', 'hiring_mode', 'location_type',
         'location_city', 'location_state', 'location_country',
+        'accepted_countries', 'time_zones', 'languages', 'contract_type',
+        'working_hours', 'currency_preference', 'payroll_preference', 'collaboration_preferences',
         'salary_min', 'salary_max', 'currency', 'salary_period', 'salary_visible',
         'experience_level', 'status', 'is_featured', 'expires_at',
     ];
@@ -24,6 +26,9 @@ class Job extends Model
         'salary_max' => 'integer',
         'salary_visible' => 'boolean',
         'is_featured' => 'boolean',
+        'accepted_countries' => 'array',
+        'time_zones' => 'array',
+        'languages' => 'array',
         'expires_at' => 'date',
         'views_count' => 'integer',
         'applications_count' => 'integer',
