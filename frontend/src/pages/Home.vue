@@ -83,12 +83,12 @@
           @keydown.enter="search"
         />
       </div>
-      <!-- Remote-only badge instead of location type select -->
+      <!-- Hiring-scope badge: local & global -->
       <div class="sm:w-48 flex items-center gap-2 px-4 py-3.5 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-700 text-sm font-semibold flex-shrink-0">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
         </svg>
-        🌐 {{ lang.t('jobs.remoteOnly') }}
+        🌍 {{ lang.t('jobs.hiringScope') }}
       </div>
       <button @click="search" class="btn-primary !py-3.5 !px-8 text-base whitespace-nowrap">
         {{ lang.t('search.searchJobs') }}

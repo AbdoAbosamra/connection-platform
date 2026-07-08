@@ -62,6 +62,7 @@ export const translations = {
     },
     jobs: {
       remoteOnly: 'Remote Only',
+      hiringScope: 'Local & Global',
       lockedRemote: 'All positions on this platform are remote',
     },
     professionals: {

@@ -27,8 +27,19 @@ class UpdateProfileRequest extends FormRequest
             'nationality' => ['nullable', 'string', 'max:100'],
             'experience_level' => ['nullable', 'in:entry,mid,senior,lead,executive'],
             'years_of_experience' => ['nullable', 'integer', 'min:0', 'max:50'],
+            'remote_experience_years' => ['nullable', 'integer', 'min:0', 'max:50'],
             'current_job_title' => ['nullable', 'string', 'max:150'],
             'desired_job_title' => ['nullable', 'string', 'max:150'],
+
+            // Candidate attributes for employer search filters
+            'industry' => ['nullable', 'string', 'max:100'],
+            'education_level' => ['nullable', 'in:high_school,associate,bachelor,master,doctorate,other'],
+            'languages' => ['nullable', 'array'],
+            'languages.*' => ['string', 'max:100'],
+            'time_zone' => ['nullable', 'string', 'max:100'],
+            'contract_preference' => ['nullable', 'in:contractor,employee,either'],
+            'certifications' => ['nullable', 'string', 'max:2000'],
+            'has_security_clearance' => ['boolean'],
             'desired_salary_min' => ['nullable', 'integer', 'min:0'],
             // gte only fires when BOTH fields are present and non-empty.
             // An empty/absent desired_salary_max means "no upper bound" — never compare against min.

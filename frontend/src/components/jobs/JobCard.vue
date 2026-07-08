@@ -36,7 +36,7 @@
 
       <!-- Badges -->
       <div class="flex flex-wrap gap-1.5 mt-2.5">
-        <span class="badge-green">🌐 Remote</span>
+        <span class="badge-green">{{ locationLabel }}</span>
         <span class="badge-gray">{{ employmentLabel }}</span>
         <span class="badge-gray capitalize">{{ job.experience_level }}</span>
       </div>
@@ -68,6 +68,17 @@ const props = defineProps({ job: { type: Object, required: true } })
 const employmentMap = { full_time: 'Full-time', part_time: 'Part-time', contract: 'Contract', freelance: 'Freelance', internship: 'Internship' }
 
 const employmentLabel = computed(() => employmentMap[props.job.employment_type] ?? props.job.employment_type)
+
+// Location badge reflects the job's hiring mode (local / national remote / international).
+const locationLabel = computed(() => {
+  const j = props.job
+  switch (j.hiring_mode) {
+    case 'international_remote': return '🌍 Remote · Global'
+    case 'national_remote':     return `🏠 Remote${j.location_country ? ' · ' + j.location_country : ''}`
+    case 'local':               return `📍 ${[j.location_city, j.location_state].filter(Boolean).join(', ') || 'On-site'}`
+    default:                    return '🌐 Remote'   // legacy jobs with no hiring_mode
+  }
+})
 
 function formatSalary(v) {
   return v >= 1000 ? `${Math.round(v / 1000)}k` : v

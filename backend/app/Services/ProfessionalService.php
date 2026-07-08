@@ -42,12 +42,50 @@ class ProfessionalService
         }
         $query->orderByDesc('updated_at');
 
+        $this->applyBasicFilters($query, $filters);
+        $this->applyAdvancedFilters($query, $filters);
+
+        return $query->paginate($perPage)->withQueryString();
+    }
+
+    /**
+     * Basic filters — always available to employers.
+     *
+     * @param  array<string, mixed>  $filters
+     */
+    private function applyBasicFilters($query, array $filters): void
+    {
         if (!empty($filters['experience_level'])) {
             $query->where('experience_level', $filters['experience_level']);
         }
 
         if (!empty($filters['availability'])) {
             $query->where('availability', $filters['availability']);
+        }
+
+        if (!empty($filters['industry'])) {
+            $query->where('industry', $filters['industry']);
+        }
+
+        if (!empty($filters['education_level'])) {
+            $query->where('education_level', $filters['education_level']);
+        }
+
+        // Minimum years of remote experience
+        if (isset($filters['remote_experience_min']) && $filters['remote_experience_min'] !== '') {
+            $query->where('remote_experience_years', '>=', (int) $filters['remote_experience_min']);
+        }
+
+        // Salary — match candidates whose expectation overlaps the employer's budget.
+        if (isset($filters['salary_max']) && $filters['salary_max'] !== '') {
+            $query->where(fn ($q) => $q
+                ->whereNull('desired_salary_min')
+                ->orWhere('desired_salary_min', '<=', (int) $filters['salary_max']));
+        }
+        if (isset($filters['salary_min']) && $filters['salary_min'] !== '') {
+            $query->where(fn ($q) => $q
+                ->whereNull('desired_salary_max')
+                ->orWhere('desired_salary_max', '>=', (int) $filters['salary_min']));
         }
 
         // Multi-skill filter — accepts comma-separated string or array of IDs
@@ -63,8 +101,57 @@ class ProfessionalService
                 $query->whereHas('skills', fn ($q) => $q->whereIn('skills.id', $skillIds));
             }
         }
+    }
 
-        return $query->paginate($perPage)->withQueryString();
+    /**
+     * Advanced international filters — only meaningful for international remote
+     * hiring. The employer UI hides these unless that mode is enabled, but we
+     * still honour any that arrive.
+     *
+     * @param  array<string, mixed>  $filters
+     */
+    private function applyAdvancedFilters($query, array $filters): void
+    {
+        if (!empty($filters['country'])) {
+            $escaped = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $filters['country']).'%';
+            $query->where('current_country', 'like', $escaped);
+        }
+
+        if (!empty($filters['time_zone'])) {
+            $query->where('time_zone', $filters['time_zone']);
+        }
+
+        // Languages — candidate must speak ALL requested languages.
+        // Stored as a JSON array; a LIKE on the raw column keeps this portable
+        // across MySQL and the SQLite test database.
+        if (!empty($filters['languages'])) {
+            $languages = is_array($filters['languages'])
+                ? $filters['languages']
+                : explode(',', $filters['languages']);
+
+            foreach (array_filter(array_map('trim', $languages)) as $lang) {
+                $escaped = '%'.str_replace(['%', '_'], ['\\%', '\\_'], $lang).'%';
+                $query->where('languages', 'like', $escaped);
+            }
+        }
+
+        // Contract type the employer wants → candidates who prefer it or "either".
+        if (!empty($filters['contract_type'])) {
+            $wanted = $filters['contract_type'] === 'remote_employee' ? 'employee' : 'contractor';
+            $query->whereIn('contract_preference', [$wanted, 'either']);
+        }
+
+        if (!empty($filters['has_portfolio'])) {
+            $query->whereNotNull('portfolio_url')->where('portfolio_url', '!=', '');
+        }
+
+        if (!empty($filters['has_certifications'])) {
+            $query->whereNotNull('certifications')->where('certifications', '!=', '');
+        }
+
+        if (!empty($filters['has_security_clearance'])) {
+            $query->where('has_security_clearance', true);
+        }
     }
 
     /**

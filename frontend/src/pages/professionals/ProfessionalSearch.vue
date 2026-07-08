@@ -9,7 +9,7 @@
     <div class="flex flex-col lg:flex-row gap-6">
       <!-- ── Filters sidebar ── -->
       <aside class="w-full lg:w-72 flex-shrink-0">
-        <div class="card p-5 space-y-5 sticky top-20">
+        <div class="card p-5 space-y-5 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
           <!-- Header -->
           <div class="flex items-center justify-between">
             <h2 class="font-bold text-gray-900 flex items-center gap-2">
@@ -40,6 +40,35 @@
             </div>
           </div>
 
+          <!-- ══ BASIC FILTERS ══ -->
+          <!-- Skills typeahead -->
+          <div>
+            <label class="label">Skills</label>
+            <div class="relative">
+              <input
+                v-model="skillQuery"
+                type="text"
+                class="input !py-2.5"
+                placeholder="React, Figma, SQL…"
+                @input="onSkillInput"
+                @focus="onSkillInput"
+              />
+              <ul v-if="skillOptions.length" class="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-48 overflow-y-auto py-1">
+                <li
+                  v-for="opt in skillOptions" :key="opt.id"
+                  @click="addSkill(opt)"
+                  class="px-3 py-1.5 text-sm text-gray-700 hover:bg-primary-50 cursor-pointer"
+                >{{ opt.name }}</li>
+              </ul>
+            </div>
+            <div v-if="selectedSkills.length" class="flex flex-wrap gap-1.5 mt-2">
+              <span v-for="s in selectedSkills" :key="s.id" class="inline-flex items-center gap-1 bg-primary-50 text-primary-700 text-xs font-semibold px-2 py-1 rounded-lg">
+                {{ s.name }}
+                <button @click="removeSkill(s.id)" class="text-primary-400 hover:text-primary-700">&times;</button>
+              </span>
+            </div>
+          </div>
+
           <!-- Experience level -->
           <div>
             <label class="label">{{ lang.t('professionals.experienceLevel') }}</label>
@@ -53,15 +82,112 @@
             </select>
           </div>
 
+          <!-- Industry -->
+          <div>
+            <label class="label">Industry</label>
+            <input v-model="filters.industry" class="input !py-2.5" placeholder="Fintech, Healthcare…" @keydown.enter="doSearch" />
+          </div>
+
+          <!-- Education -->
+          <div>
+            <label class="label">Education</label>
+            <select v-model="filters.education_level" class="input !py-2.5 bg-gray-50 cursor-pointer">
+              <option value="">Any</option>
+              <option value="high_school">High school</option>
+              <option value="associate">Associate</option>
+              <option value="bachelor">Bachelor's</option>
+              <option value="master">Master's</option>
+              <option value="doctorate">Doctorate</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <!-- Salary range -->
+          <div>
+            <label class="label">Salary range (USD)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <input v-model.number="filters.salary_min" type="number" min="0" class="input !py-2.5" placeholder="Min" />
+              <input v-model.number="filters.salary_max" type="number" min="0" class="input !py-2.5" placeholder="Max" />
+            </div>
+          </div>
+
           <!-- Availability -->
           <div>
             <label class="label">{{ lang.t('professionals.availability') }}</label>
             <select v-model="filters.availability" class="input !py-2.5 bg-gray-50 cursor-pointer">
               <option value="">Any</option>
-              <option value="immediate">{{ lang.t('professionals.availableNow') }}</option>
-              <option value="2_weeks">{{ lang.t('professionals.in2Weeks') }}</option>
-              <option value="1_month">{{ lang.t('professionals.in1Month') }}</option>
+              <option value="immediately">{{ lang.t('professionals.availableNow') }}</option>
+              <option value="two_weeks">{{ lang.t('professionals.in2Weeks') }}</option>
+              <option value="one_month">{{ lang.t('professionals.in1Month') }}</option>
             </select>
+          </div>
+
+          <!-- Remote experience -->
+          <div>
+            <label class="label">Min. remote experience (years)</label>
+            <input v-model.number="filters.remote_experience_min" type="number" min="0" max="50" class="input !py-2.5" placeholder="Any" />
+          </div>
+
+          <!-- ══ ADVANCED / INTERNATIONAL ══ -->
+          <div class="pt-1 border-t border-gray-100">
+            <label class="flex items-center justify-between gap-2 cursor-pointer py-2 group">
+              <span class="flex items-center gap-1.5 text-sm font-semibold text-gray-800">
+                🌍 International Remote hiring
+              </span>
+              <span class="relative inline-block w-9 h-5 flex-shrink-0">
+                <input v-model="intlHiring" type="checkbox" class="sr-only peer" @change="onToggleIntl" />
+                <span class="absolute inset-0 rounded-full bg-gray-200 peer-checked:bg-primary-500 transition-colors" />
+                <span class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4" />
+              </span>
+            </label>
+            <p class="text-xs text-gray-400 -mt-1 mb-1">Enable to filter international candidates.</p>
+          </div>
+
+          <div v-if="intlHiring" class="space-y-4 animate-fade-in rounded-xl bg-slate-50 border border-slate-200 p-4">
+            <p class="text-[11px] uppercase tracking-wide font-semibold text-slate-500">Advanced filters</p>
+
+            <!-- Country -->
+            <div>
+              <label class="label">Country</label>
+              <input v-model="filters.country" class="input !py-2.5 bg-white" placeholder="Egypt, Brazil…" @keydown.enter="doSearch" />
+            </div>
+
+            <!-- Time zone -->
+            <div>
+              <label class="label">Time zone</label>
+              <input v-model="filters.time_zone" class="input !py-2.5 bg-white" placeholder="UTC+2" @keydown.enter="doSearch" />
+            </div>
+
+            <!-- Languages -->
+            <div>
+              <label class="label">Languages</label>
+              <input v-model="filters.languages" class="input !py-2.5 bg-white" placeholder="English, French" @keydown.enter="doSearch" />
+              <p class="text-xs text-gray-400 mt-1">Comma-separated. Candidate must speak all.</p>
+            </div>
+
+            <!-- Contract type -->
+            <div>
+              <label class="label">Contract type</label>
+              <select v-model="filters.contract_type" class="input !py-2.5 bg-white cursor-pointer">
+                <option value="">Any</option>
+                <option value="contractor">Contractor</option>
+                <option value="remote_employee">Remote employee</option>
+              </select>
+            </div>
+
+            <!-- Boolean toggles -->
+            <label class="flex items-center gap-2.5 cursor-pointer text-sm text-gray-700">
+              <input v-model="filters.has_portfolio" type="checkbox" class="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-gray-300" />
+              Has portfolio
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer text-sm text-gray-700">
+              <input v-model="filters.has_certifications" type="checkbox" class="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-gray-300" />
+              Has certifications
+            </label>
+            <label class="flex items-center gap-2.5 cursor-pointer text-sm text-gray-700">
+              <input v-model="filters.has_security_clearance" type="checkbox" class="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-gray-300" />
+              Security clearance <span class="text-gray-400">(optional)</span>
+            </label>
           </div>
 
           <button @click="doSearch" class="btn-primary w-full !py-3">
@@ -157,10 +283,11 @@
 </template>
 
 <script setup>
-import { reactive, computed, onMounted } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useProfessionalsStore } from '@/stores/professionals'
 import { useLanguageStore } from '@/stores/language'
+import { professionalsApi } from '@/api/professionals'
 import ProfessionalCard from '@/components/professionals/ProfessionalCard.vue'
 
 const route  = useRoute()
@@ -168,27 +295,93 @@ const router = useRouter()
 const store  = useProfessionalsStore()
 const lang   = useLanguageStore()
 
+const emptyFilters = () => ({
+  q: '', experience_level: '', availability: '', industry: '', education_level: '',
+  salary_min: null, salary_max: null, remote_experience_min: null, skills: '',
+  // advanced (international)
+  country: '', time_zone: '', languages: '', contract_type: '',
+  has_portfolio: false, has_certifications: false, has_security_clearance: false,
+  page: 1,
+})
+
 const filters = reactive({
+  ...emptyFilters(),
   q:                route.query.q ?? '',
   experience_level: route.query.experience_level ?? '',
   availability:     route.query.availability ?? '',
   page:             Number(route.query.page) || 1,
 })
 
+// ── International toggle ──────────────────────────────────────────────
+const intlHiring = ref(false)
+
+// Clear the advanced filters when international hiring is switched off, so
+// they never silently apply while hidden.
+function onToggleIntl() {
+  if (!intlHiring.value) {
+    Object.assign(filters, {
+      country: '', time_zone: '', languages: '', contract_type: '',
+      has_portfolio: false, has_certifications: false, has_security_clearance: false,
+    })
+  }
+}
+
+// ── Skills typeahead ──────────────────────────────────────────────────
+const skillQuery     = ref('')
+const skillOptions   = ref([])
+const selectedSkills = ref([])
+let skillTimer = null
+
+function onSkillInput() {
+  clearTimeout(skillTimer)
+  const term = skillQuery.value.trim()
+  skillTimer = setTimeout(async () => {
+    try {
+      const { data } = await professionalsApi.skills(term)
+      const chosen = new Set(selectedSkills.value.map(s => s.id))
+      skillOptions.value = (data.skills ?? []).filter(s => !chosen.has(s.id)).slice(0, 8)
+    } catch {
+      skillOptions.value = []
+    }
+  }, 200)
+}
+
+function addSkill(opt) {
+  selectedSkills.value.push(opt)
+  filters.skills = selectedSkills.value.map(s => s.id).join(',')
+  skillQuery.value = ''
+  skillOptions.value = []
+}
+
+function removeSkill(id) {
+  selectedSkills.value = selectedSkills.value.filter(s => s.id !== id)
+  filters.skills = selectedSkills.value.map(s => s.id).join(',')
+}
+
 function doSearch() {
   filters.page = 1
-  router.replace({ query: { ...filters } })
+  router.replace({ query: cleanQuery() })
   store.search({ ...filters })
 }
 
+// Only reflect the non-empty filters in the URL to keep it readable.
+function cleanQuery() {
+  return Object.fromEntries(
+    Object.entries(filters).filter(([, v]) => v !== '' && v !== false && v !== null && v !== undefined)
+  )
+}
+
 function resetFilters() {
-  Object.assign(filters, { q: '', experience_level: '', availability: '', page: 1 })
+  Object.assign(filters, emptyFilters())
+  selectedSkills.value = []
+  skillQuery.value = ''
+  intlHiring.value = false
   doSearch()
 }
 
 function goToPage(page) {
   filters.page = page
-  router.replace({ query: { ...filters } })
+  router.replace({ query: cleanQuery() })
   store.search({ ...filters })
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }

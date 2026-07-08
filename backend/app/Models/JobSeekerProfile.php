@@ -12,16 +12,20 @@ class JobSeekerProfile extends Model
     protected $fillable = [
         'user_id', 'headline', 'bio', 'resume', 'portfolio_url',
         'linkedin_url', 'github_url', 'current_city', 'current_country',
-        'nationality', 'experience_level', 'years_of_experience',
-        'current_job_title', 'desired_job_title', 'desired_salary_min',
-        'desired_salary_max', 'currency', 'availability',
+        'nationality', 'experience_level', 'years_of_experience', 'remote_experience_years',
+        'current_job_title', 'desired_job_title', 'industry', 'education_level',
+        'languages', 'time_zone', 'contract_preference', 'certifications', 'has_security_clearance',
+        'desired_salary_min', 'desired_salary_max', 'currency', 'availability',
         'profile_complete', 'is_featured',
     ];
 
     protected $casts = [
         'profile_complete' => 'boolean',
         'is_featured' => 'boolean',
+        'has_security_clearance' => 'boolean',
         'years_of_experience' => 'integer',
+        'remote_experience_years' => 'integer',
+        'languages' => 'array',
         'desired_salary_min' => 'integer',
         'desired_salary_max' => 'integer',
     ];

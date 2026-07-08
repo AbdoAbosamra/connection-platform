@@ -130,6 +130,69 @@
 
       </div>
 
+      <!-- Additional details — power the employer talent-search filters -->
+      <div class="card p-6 space-y-4">
+        <h2 class="font-bold text-gray-900 border-b border-gray-100 pb-3">Additional details</h2>
+        <p class="text-xs text-gray-500 -mt-1">Help employers find you — including for international remote roles.</p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="label">Industry</label>
+            <input v-model="form.industry" class="input" placeholder="Fintech, Healthcare…" />
+          </div>
+          <div>
+            <label class="label">Education</label>
+            <select v-model="form.education_level" class="input bg-gray-50 cursor-pointer">
+              <option value="">Prefer not to say</option>
+              <option value="high_school">High school</option>
+              <option value="associate">Associate</option>
+              <option value="bachelor">Bachelor's</option>
+              <option value="master">Master's</option>
+              <option value="doctorate">Doctorate</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="label">Years of remote experience</label>
+            <input v-model.number="form.remote_experience_years" type="number" min="0" max="50" class="input" placeholder="0" />
+          </div>
+          <div>
+            <label class="label">Time zone</label>
+            <input v-model="form.time_zone" class="input" placeholder="UTC+2" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="label">Languages</label>
+            <input v-model="languagesText" class="input" placeholder="English, French" />
+            <p class="text-xs text-gray-400 mt-1">Comma-separated.</p>
+          </div>
+          <div>
+            <label class="label">Engagement preference</label>
+            <select v-model="form.contract_preference" class="input bg-gray-50 cursor-pointer">
+              <option value="">No preference</option>
+              <option value="contractor">Contractor</option>
+              <option value="employee">Employee</option>
+              <option value="either">Either</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="label">Certifications</label>
+          <textarea v-model="form.certifications" rows="2" class="input resize-none" placeholder="AWS Solutions Architect, PMP…" />
+        </div>
+
+        <label class="flex items-center gap-2.5 cursor-pointer group">
+          <input v-model="form.has_security_clearance" type="checkbox" class="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-gray-300" />
+          <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">I hold a security clearance</span>
+        </label>
+      </div>
+
       <!-- Skills -->
       <div class="card p-6 space-y-4">
         <h2 class="font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3">
@@ -306,7 +369,13 @@ const form = ref({
   years_of_experience: 0, desired_salary_min: null, desired_salary_max: null,
   availability: 'negotiable',
   linkedin_url: '', github_url: '', portfolio_url: '',
+  // Additional details (talent-search filters)
+  industry: '', education_level: '', remote_experience_years: 0, time_zone: '',
+  contract_preference: '', certifications: '', has_security_clearance: false,
 })
+
+// Languages are edited as comma text, sent as an array.
+const languagesText = ref('')
 
 // Live salary range guard — shown inline, also blocks submit
 const salaryRangeError = computed(() => {
@@ -413,8 +482,17 @@ async function save() {
         if (!isSalaryEmpty(v)) fd.append(k, v)
         return
       }
+      // Languages are appended separately (as an array) from languagesText.
+      if (k === 'languages') return
+      // Booleans must go as 1/0 for Laravel's boolean rule.
+      if (k === 'has_security_clearance') { fd.append(k, v ? '1' : '0'); return }
+      // Enum selects: omit when blank so the `in:` rule isn't hit with "".
+      if ((k === 'education_level' || k === 'contract_preference') && (v === '' || v == null)) return
       if (v !== null && v !== undefined) fd.append(k, v)
     })
+    // Languages: comma text → languages[] array
+    languagesText.value.split(',').map(s => s.trim()).filter(Boolean)
+      .forEach((lang, i) => fd.append(`languages[${i}]`, lang))
     if (resume.value) fd.append('resume', resume.value)
     // Append skills as skills[0][id], skills[0][proficiency], ...
     selectedSkills.value.forEach((skill, i) => {
@@ -454,6 +532,7 @@ onMounted(async () => {
     const { data } = await client.get('/job-seeker/profile')
     profile.value  = data.profile
     Object.assign(form.value, data.profile)
+    languagesText.value = (data.profile.languages ?? []).join(', ')
     if (data.profile.skills) {
       selectedSkills.value = data.profile.skills.map(s => ({
         id: s.id, name: s.name, proficiency: s.pivot?.proficiency ?? 'intermediate',

@@ -24,7 +24,7 @@
               <p class="text-gray-500 font-medium mb-4">{{ job.employer?.company_name }}</p>
 
               <div class="flex flex-wrap gap-2">
-                <span class="badge-green">🌐 Remote</span>
+                <span class="badge-green">{{ locationLabel }}</span>
                 <span class="badge-gray">{{ employmentMap[job.employment_type] }}</span>
                 <span class="badge-gray capitalize">{{ job.experience_level }}</span>
               </div>
@@ -175,6 +175,18 @@ const job     = computed(() => store.currentJob)
 const isSaved = computed(() => store.savedIds.has(job.value?.id))
 
 const employmentMap = { full_time: 'Full-time', part_time: 'Part-time', contract: 'Contract', freelance: 'Freelance', internship: 'Internship' }
+
+// Location badge reflects the job's hiring mode.
+const locationLabel = computed(() => {
+  const j = job.value
+  if (!j) return ''
+  switch (j.hiring_mode) {
+    case 'international_remote': return '🌍 Remote · Global'
+    case 'national_remote':     return `🏠 Remote${j.location_country ? ' · ' + j.location_country : ''}`
+    case 'local':               return `📍 ${[j.location_city, j.location_state].filter(Boolean).join(', ') || 'On-site'}`
+    default:                    return '🌐 Remote'
+  }
+})
 
 onMounted(() => store.fetchJob(route.params.slug))
 </script>

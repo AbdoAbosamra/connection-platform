@@ -27,7 +27,14 @@ class ProfessionalController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $filters = $request->only(['q', 'experience_level', 'availability', 'skills']);
+        $filters = $request->only([
+            // Basic
+            'q', 'experience_level', 'availability', 'skills', 'industry',
+            'education_level', 'remote_experience_min', 'salary_min', 'salary_max',
+            // Advanced (international)
+            'country', 'time_zone', 'languages', 'contract_type',
+            'has_portfolio', 'has_certifications', 'has_security_clearance',
+        ]);
         $perPage = min((int) $request->input('per_page', 15), 50);
 
         $results = $this->professionals->search($filters, $perPage);
@@ -65,8 +72,12 @@ class ProfessionalController extends Controller
             'current_job_title' => $p->current_job_title,
             'experience_level' => $p->experience_level,
             'years_of_experience' => $p->years_of_experience,
+            'remote_experience_years' => $p->remote_experience_years,
+            'industry' => $p->industry,
             'current_city' => $p->current_city,
             'current_country' => $p->current_country,
+            'time_zone' => $p->time_zone,
+            'languages' => $p->languages,
             'availability' => $p->availability,
             'is_featured' => $p->is_featured,
             // completionPercentage() called explicitly — 'completion' was removed from
@@ -96,8 +107,16 @@ class ProfessionalController extends Controller
             'desired_job_title' => $p->desired_job_title,
             'experience_level' => $p->experience_level,
             'years_of_experience' => $p->years_of_experience,
+            'remote_experience_years' => $p->remote_experience_years,
+            'industry' => $p->industry,
+            'education_level' => $p->education_level,
             'current_city' => $p->current_city,
             'current_country' => $p->current_country,
+            'time_zone' => $p->time_zone,
+            'languages' => $p->languages,
+            'contract_preference' => $p->contract_preference,
+            'certifications' => $p->certifications,
+            'has_security_clearance' => $p->has_security_clearance,
             'availability' => $p->availability,
             'portfolio_url' => $p->portfolio_url,
             'linkedin_url' => $p->linkedin_url,
