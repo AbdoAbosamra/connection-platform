@@ -75,6 +75,8 @@ Route::get('/auth/linkedin/callback', [LinkedInAuthController::class, 'callback'
 Route::middleware(['auth:sanctum', 'active', 'throttle:60,1'])->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::patch('/auth/account', [AuthController::class, 'updateAccount']);
+    Route::patch('/auth/password', [AuthController::class, 'updatePassword']);
 
     // Broadcasting (WebSocket) channel authorization for the SPA's bearer token.
     // Echo posts {channel_name, socket_id} here; channel callbacks live in
@@ -130,6 +132,7 @@ Route::middleware(['auth:sanctum', 'active', 'role:employer', 'throttle:60,1'])
         Route::patch('/applications/{application}/status', [Employer\ApplicationController::class, 'updateStatus']);
 
         // Interview scheduling
+        Route::get('/interviews', [Employer\InterviewController::class, 'index']);
         Route::post('/applications/{application}/interviews', [Employer\InterviewController::class, 'store']);
         Route::patch('/interviews/{interview}', [Employer\InterviewController::class, 'update']);
         Route::delete('/interviews/{interview}', [Employer\InterviewController::class, 'destroy']);

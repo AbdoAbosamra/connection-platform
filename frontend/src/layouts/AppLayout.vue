@@ -89,7 +89,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useMessagesStore } from '@/stores/messages'
@@ -99,12 +99,18 @@ import {
   ClipboardDocumentListIcon, BookmarkIcon, UsersIcon,
   ChartBarIcon, FlagIcon, ArrowRightOnRectangleIcon,
   PresentationChartLineIcon, CreditCardIcon, CalendarDaysIcon,
-  ExclamationTriangleIcon,
+  ExclamationTriangleIcon, BuildingOffice2Icon, Cog6ToothIcon,
+  ShieldCheckIcon,
 } from '@heroicons/vue/24/outline'
+import { employerApi } from '@/api/employer'
 
 const auth     = useAuthStore()
 const route    = useRoute()
 const msgStore = useMessagesStore()
+
+// Whether the employer has any international remote jobs — gates the
+// (otherwise hidden) Compliance module. Compliance is never a default nav item.
+const hasInternationalJobs = ref(false)
 
 const userInitial   = computed(() => auth.user?.name?.[0]?.toUpperCase() ?? '?')
 const pageTitle     = computed(() => route.meta?.title ?? '')
@@ -126,19 +132,33 @@ onMounted(async () => {
     // Lightweight poll just for the badge when not on the messages page
     unreadTimer = setInterval(msgStore.fetchUnreadCount, 30_000)
   }
+  // Reveal the Compliance module only if the employer hires internationally.
+  if (auth.isEmployer) {
+    try {
+      const { data } = await employerApi.stats()
+      hasInternationalJobs.value = !!data.has_international_jobs
+    } catch { /* non-critical — Compliance stays hidden on failure */ }
+  }
 })
 onUnmounted(() => {
   if (unreadTimer) clearInterval(unreadTimer)
 })
 
+// Modules, not geography. Compliance is intentionally NOT here — it is appended
+// conditionally below, only when the employer has international remote jobs.
 const employerNav = [
-  { to: '/employer/dashboard',    label: 'Dashboard',       icon: HomeIcon },
-  { to: '/employer/jobs',         label: 'My Jobs',         icon: BriefcaseIcon },
-  { to: '/employer/applications', label: 'Applications',    icon: ClipboardDocumentListIcon },
-  { to: '/employer/messages',     label: 'Messages',        icon: ChatBubbleLeftRightIcon, badge: true },
-  { to: '/employer/billing',      label: 'Billing',         icon: CreditCardIcon },
-  { to: '/employer/profile',      label: 'Company Profile', icon: UserIcon },
+  { to: '/employer/dashboard',    label: 'Dashboard',  icon: HomeIcon },
+  { to: '/employer/jobs',         label: 'Jobs',       icon: BriefcaseIcon },
+  { to: '/employer/applications', label: 'Candidates', icon: UsersIcon },
+  { to: '/employer/messages',     label: 'Messages',   icon: ChatBubbleLeftRightIcon, badge: true },
+  { to: '/employer/interviews',   label: 'Interviews', icon: CalendarDaysIcon },
+  { to: '/employer/profile',      label: 'Companies',  icon: BuildingOffice2Icon },
+  { to: '/employer/analytics',    label: 'Analytics',  icon: ChartBarIcon },
+  { to: '/employer/billing',      label: 'Billing',    icon: CreditCardIcon },
+  { to: '/employer/settings',     label: 'Settings',   icon: Cog6ToothIcon },
 ]
+
+const complianceNavItem = { to: '/employer/compliance', label: 'Compliance', icon: ShieldCheckIcon }
 
 const seekerNav = [
   { to: '/job-seeker/dashboard',    label: 'Dashboard',    icon: HomeIcon },
@@ -160,7 +180,7 @@ const adminNav = [
 
 const navItems = computed(() => {
   if (auth.isAdmin)    return adminNav
-  if (auth.isEmployer) return employerNav
+  if (auth.isEmployer) return hasInternationalJobs.value ? [...employerNav, complianceNavItem] : employerNav
   return seekerNav
 })
 </script>

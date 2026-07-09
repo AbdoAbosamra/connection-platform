@@ -8,6 +8,7 @@ export const interviewsApi = {
     client.patch(`/employer/interviews/${interviewId}`, data),
   cancelByEmployer: (interviewId) =>
     client.delete(`/employer/interviews/${interviewId}`),
+  employerList: (page = 1) => client.get('/employer/interviews', { params: { page } }),
 
   // Job seeker
   mine: (page = 1) => client.get('/job-seeker/interviews', { params: { page } }),
