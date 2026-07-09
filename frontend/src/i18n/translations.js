@@ -46,8 +46,8 @@ export const translations = {
       addedDaily: 'New listings added daily',
     },
     features: {
-      globalReach: 'Global Reach',
-      globalReachDesc: 'Connect with international talent and companies across North America and beyond.',
+      globalReach: 'Local or Global',
+      globalReachDesc: 'Hire in your city, or open roles to remote talent anywhere — one platform for both.',
       verifiedProfiles: 'Verified Profiles',
       verifiedProfilesDesc: 'Every profile is reviewed to ensure quality and authenticity for both sides.',
       applyInSeconds: 'Apply in Seconds',
@@ -55,8 +55,8 @@ export const translations = {
     },
     employers: {
       label: 'For Employers',
-      title: 'Hire globally, grow faster',
-      desc: 'Access a pre-vetted pool of skilled international professionals. Post a job in minutes and start receiving qualified applications today.',
+      title: 'Hire locally or globally, grow faster',
+      desc: 'Post a job in minutes and reach qualified candidates near you — or open it up to remote talent anywhere. Start receiving applications today.',
       cta: 'Post a Job Free',
       note: 'No credit card required · Free to post',
     },
