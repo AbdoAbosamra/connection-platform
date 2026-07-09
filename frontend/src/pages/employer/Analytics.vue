@@ -8,7 +8,7 @@
 
     <!-- Stat cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <div v-for="(s, i) in statCards" :key="s.label" class="card p-5 flex items-center gap-4">
+      <div v-for="s in statCards" :key="s.label" class="card p-5 flex items-center gap-4">
         <div :class="s.bg" class="stat-icon">
           <component :is="s.icon" :class="s.text" class="w-5 h-5" />
         </div>
