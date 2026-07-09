@@ -16,10 +16,18 @@ abstract class AbstractGateway implements PaymentGateway
      */
     protected function tierForPlan(SubscriptionPlan $plan): string
     {
-        return match (true) {
-            $plan->job_posts_limit === 0 => 'enterprise',
-            $plan->price_monthly >= 10000 => 'pro',
-            default => 'basic',
+        // Map the public plan to an internal subscription_tier enum value.
+        // Prefer the known slugs; fall back to price/limit for custom plans.
+        return match ($plan->slug) {
+            'free' => 'free',
+            'starter' => 'basic',
+            'growth' => 'pro',
+            'scale' => 'enterprise',
+            default => match (true) {
+                $plan->job_posts_limit === 0 => 'enterprise',
+                $plan->price_monthly >= 7000 => 'pro',
+                default => 'basic',
+            },
         };
     }
 

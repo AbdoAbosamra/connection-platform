@@ -318,47 +318,8 @@ class DatabaseSeeder extends Seeder
      */
     private function seedSubscriptionPlans(): void
     {
-        $plans = [
-            [
-                'name' => 'Basic',
-                'slug' => 'basic',
-                'description' => 'For small teams getting started with remote hiring.',
-                'price_monthly' => 4900,
-                'price_annual' => 49000,
-                'job_posts_limit' => 5,
-                'featured_listings' => false,
-                'candidate_search' => true,
-                'analytics' => false,
-                'priority_support' => false,
-            ],
-            [
-                'name' => 'Pro',
-                'slug' => 'pro',
-                'description' => 'For growing companies hiring at scale.',
-                'price_monthly' => 14900,
-                'price_annual' => 149000,
-                'job_posts_limit' => 25,
-                'featured_listings' => true,
-                'candidate_search' => true,
-                'analytics' => true,
-                'priority_support' => false,
-            ],
-            [
-                'name' => 'Enterprise',
-                'slug' => 'enterprise',
-                'description' => 'Unlimited hiring power with premium support.',
-                'price_monthly' => 39900,
-                'price_annual' => 399000,
-                'job_posts_limit' => 0,
-                'featured_listings' => true,
-                'candidate_search' => true,
-                'analytics' => true,
-                'priority_support' => true,
-            ],
-        ];
-
-        foreach ($plans as $plan) {
-            SubscriptionPlan::updateOrCreate(['slug' => $plan['slug']], $plan);
-        }
+        // Free / Starter / Growth / Scale — defined in a dedicated, idempotent
+        // seeder so production can refresh plans without re-running demo data.
+        $this->call(SubscriptionPlanSeeder::class);
     }
 }
